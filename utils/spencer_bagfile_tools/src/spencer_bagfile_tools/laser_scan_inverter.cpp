@@ -40,20 +40,17 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/shared_ptr.hpp>
 
-using namespace std;
-using namespace boost;
-
 #include <ros/ros.h>
 #include <sensor_msgs/LaserScan.h>
 
-shared_ptr<ros::Publisher> g_laserPublisher; 
+boost::shared_ptr<ros::Publisher> g_laserPublisher; 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void laserCallback(const sensor_msgs::LaserScan::ConstPtr& laserScanMsg)
 {
   sensor_msgs::LaserScan invertedScan(*laserScanMsg);
 
-  swap(invertedScan.angle_min, invertedScan.angle_max);
+  std::swap(invertedScan.angle_min, invertedScan.angle_max);
   invertedScan.angle_increment = -invertedScan.angle_increment;
 
   const size_t numRangeValues = laserScanMsg->ranges.size();
@@ -74,9 +71,9 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr& laserScanMsg)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
-	if(argc == 2 && (string(argv[1]) == "help" || string(argv[1]) == "--help")) {
-	cout << "Converts a flipped laser scan (with max_angle < min_angle) such that it can be processed by laser_scan_matcher" << endl << endl;
-	cout << "Subscribes to /laser, publishes to /inverted_laser" << endl;
+	if(argc == 2 && (std::string(argv[1]) == "help" || std::string(argv[1]) == "--help")) {
+	std::cout << "Converts a flipped laser scan (with max_angle < min_angle) such that it can be processed by laser_scan_matcher" << std::endl << std::endl;
+	std::cout << "Subscribes to /laser, publishes to /inverted_laser" << std::endl;
 	}
 
 	ros::init(argc, argv, "laser_scan_inverter");
@@ -95,7 +92,7 @@ int main(int argc, char **argv)
 
 	// Create output topic
 	ROS_INFO("Creating LaserScan publisher...");
-	g_laserPublisher = shared_ptr<ros::Publisher>(new ros::Publisher(nodeHandle.advertise<sensor_msgs::LaserScan>("inverted_laser", 512)));
+	g_laserPublisher = boost::shared_ptr<ros::Publisher>(new ros::Publisher(nodeHandle.advertise<sensor_msgs::LaserScan>("inverted_laser", 512)));
 
 	ros::spin();
 	return 0;
